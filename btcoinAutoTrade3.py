@@ -52,8 +52,8 @@ def predict_price(ticker):
         closeDf = forecast[forecast['ds'] == data.iloc[-1]['ds'].replace(hour=9)]
     closeValue = closeDf['yhat'].values[0]
     predicted_close_price = closeValue
-predict_price("KRW-HUNT")
-schedule.every().hour.do(lambda: predict_price("KRW-HUNT"))
+predict_price("KRW-POWR")
+schedule.every().hour.do(lambda: predict_price("KRW-POWR"))
 
 # 로그인
 upbit = pyupbit.Upbit(access, secret)
@@ -63,21 +63,21 @@ print("autotrade start")
 while True:
     try:
         now = datetime.datetime.now()
-        start_time = get_start_time("KRW-HUNT")
+        start_time = get_start_time("KRW-POWR")
         end_time = start_time + datetime.timedelta(days=1)
         schedule.run_pending()
 
         if start_time < now < end_time - datetime.timedelta(seconds=10):
-            target_price = get_target_price("KRW-HUNT", 0.1)
-            current_price = get_current_price("KRW-HUNT")
+            target_price = get_target_price("KRW-POWR", 0.1)
+            current_price = get_current_price("KRW-POWR")
             if target_price < current_price and current_price < predicted_close_price:
-                krw = get_balance("HUNT")
+                krw = get_balance("POWR")
                 if krw > 1000:
-                    upbit.buy_market_order("KRW-HUNT", krw*0.9995)
+                    upbit.buy_market_order("KRW-POWR", krw*0.9995)
         else:
-            hunt = get_balance("HUNT")
-            if hunt > 15:
-                upbit.sell_market_order("KRW-HUNT", hunt*0.9995)
+            powr = get_balance("POWR")
+            if powr > 10:
+                upbit.sell_market_order("KRW-POWR", powr*0.9995)
         time.sleep(1)
     except Exception as e:
         print(e)
